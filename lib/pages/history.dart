@@ -1,52 +1,37 @@
-import 'package:calculadora_renda_passiva/preview.dart';
+import 'package:passive_income_calculator/pages/preview.dart';
 import 'package:flutter/material.dart';
 
 class History extends StatelessWidget {
-  final List list;
+  final List history;
 
-  History(this.list);
+  History(this.history);
 
   @override
   Widget build(BuildContext context) {
-    _submitSimulation(index) {
-      var item = list[index];
-      Navigator.push(
-        context,
-        MaterialPageRoute<void>(
-          builder: (BuildContext context) => Preview(
-            rendaMensalDesejada:
-                double.parse(item['rendaMensalDesejada'].toString()),
-            rendaMensalLiquidaAtual:
-                double.parse(item['rendaMensalLiquidaAtual'].toString()),
-            economiaAtualPercentual:
-                double.parse(item['economiaAtualPercentual'].toString()),
-            economiaAtual: double.parse(item['economiaAtual'].toString()),
-            rendimentoDaRendaPassiva:
-                double.parse(item['rendimentoDaRendaPassiva'].toString()),
-            rendimentoDasAplicacoes:
-                double.parse(item['rendimentoDasAplicacoes'].toString()),
-            grandeObjetivo: double.parse(item['grandeObjetivo'].toString()),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text('History'),
       ),
       body: ListView.builder(
-        itemCount: list.length,
+        itemCount: this.history.length,
         itemBuilder: (BuildContext context, int index) {
           return Padding(
               padding: EdgeInsets.all(16),
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(list[index]['dataCriacao']!,
+                    Text(this.history[index]['dateCreated']!,
                         style: TextStyle(fontSize: 20)),
                     FloatingActionButton(
-                      onPressed: () => _submitSimulation(index),
+                      heroTag: '${this.history[index]['dateCreated']}',
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (BuildContext context) => Preview(
+                              this.history[index]['years']
+                                  as List<Map<String, double>>),
+                        ),
+                      ),
                       child: Icon(Icons.remove_red_eye),
                       tooltip: 'Ver Simulação',
                     ),
@@ -54,6 +39,7 @@ class History extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
+        heroTag: 'backToHome',
         backgroundColor: Colors.green,
         onPressed: () => Navigator.pop(context),
         tooltip: 'Home',

@@ -1,6 +1,5 @@
-# calculadora_renda_passiva
-
-Calculadora de Renda Passiva.
+# passive_income_calculator
+Simple Passive Income Calculator
 
 ## Setup
 
