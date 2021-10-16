@@ -1,57 +1,12 @@
 import 'package:flutter/material.dart';
 
 class Preview extends StatelessWidget {
-  final double rendaMensalDesejada;
+  final List<Map<String, double>> yearsList;
 
-  final double rendaMensalLiquidaAtual;
+  Preview(this.yearsList);
 
-  final double economiaAtualPercentual;
-
-  final double economiaAtual;
-
-  final double rendimentoDaRendaPassiva;
-
-  final double rendimentoDasAplicacoes;
-
-  final double grandeObjetivo;
-
-  final anos = [];
-
-  double aporteAnual = 0.0;
-  double rendimentoAnual = 0.0;
-  double valorFinal = 0.0;
-  double rendaPassivaAtualAno = 0.0;
-  double rendaPassivaAtualMes = 0.0;
-  int ano = 1;
-
-  Preview(
-      {required this.rendaMensalDesejada,
-      required this.rendaMensalLiquidaAtual,
-      required this.economiaAtualPercentual,
-      required this.economiaAtual,
-      required this.rendimentoDaRendaPassiva,
-      required this.rendimentoDasAplicacoes,
-      required this.grandeObjetivo});
   @override
   Widget build(BuildContext context) {
-    while (this.aporteAnual < this.grandeObjetivo) {
-      this.aporteAnual = this.valorFinal + (this.economiaAtual * 12);
-      this.rendimentoAnual = this.rendimentoDaRendaPassiva;
-      this.valorFinal =
-          this.aporteAnual + (this.aporteAnual * (this.rendimentoAnual / 100));
-      this.rendaPassivaAtualAno =
-          this.valorFinal * (this.rendimentoDaRendaPassiva / 100);
-      this.rendaPassivaAtualMes = this.rendaPassivaAtualAno / 12;
-
-      this.anos.add({
-        "aporteAnual": aporteAnual,
-        "rendimentoAnual": rendimentoAnual,
-        "valorFinal": valorFinal,
-        "rendaPassivaAtualAno": rendaPassivaAtualAno,
-        "rendaPassivaAtualMes": rendaPassivaAtualMes
-      });
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: Text("Previsão"),
@@ -113,47 +68,47 @@ class Preview extends StatelessWidget {
                             style: TextStyle(fontSize: 16)),
                       ),
                     ]),
-                ...this.anos.map((ano) {
+                ...this.yearsList.map((year) {
                   return TableRow(children: [
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Text(
-                        "${this.anos.indexOf(ano) + 1}",
+                        "${this.yearsList.indexOf(year) + 1}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Text(
-                        "R\$ ${ano['aporteAnual'].toStringAsFixed(2)}",
+                        "R\$ ${year['anualContrib']?.toStringAsFixed(2)}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Text(
-                        "${ano['rendimentoAnual'].toStringAsFixed(2)} %",
+                        "${year['anualYield']?.toStringAsFixed(2)} %",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Text(
-                        "R\$ ${ano['valorFinal'].toStringAsFixed(2)}",
+                        "R\$ ${year['finalSavesAmount']?.toStringAsFixed(2)}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Text(
-                        "R\$ ${ano['rendaPassivaAtualAno'].toStringAsFixed(2)}",
+                        "R\$ ${year['currentlyPassiveIncomeYear']?.toStringAsFixed(2)}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),
                     TableCell(
                       verticalAlignment: TableCellVerticalAlignment.middle,
                       child: Text(
-                        "R\$ ${ano['rendaPassivaAtualMes'].toStringAsFixed(2)}",
+                        "R\$ ${year['currentlyPassiveIncomeMonth']?.toStringAsFixed(2)}",
                         style: TextStyle(fontWeight: FontWeight.bold),
                       ),
                     ),

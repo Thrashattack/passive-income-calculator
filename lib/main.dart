@@ -1,15 +1,15 @@
-import 'package:calculadora_renda_passiva/history.dart';
-import 'package:calculadora_renda_passiva/preview.dart';
+import 'package:passive_income_calculator/logic/calcBigGoal.dart';
+import 'package:passive_income_calculator/logic/getBigGoals.dart';
+import 'package:passive_income_calculator/logic/saveBigGoal.dart';
+import 'package:passive_income_calculator/pages/history.dart';
+import 'package:passive_income_calculator/pages/preview.dart';
 import 'package:flutter/material.dart';
-import 'package:localstorage/localstorage.dart';
-
-final LocalStorage storage = new LocalStorage('calculadora_renda_passiva');
 
 void main() {
-  runApp(CalculadoraRendaPassiva());
+  runApp(PassiveIncomeCalculator());
 }
 
-class CalculadoraRendaPassiva extends StatelessWidget {
+class PassiveIncomeCalculator extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -32,53 +32,34 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var showSimulation = false;
-  final _controllerRendaMensalDesejada = TextEditingController();
-  final _controllerRendaMensalLiquidaAtual = TextEditingController();
-  final _controllerEconomiaAtualPercentual = TextEditingController();
-  final _controllerEconomiaAtual = TextEditingController();
-  final _controllerRendimentoDaRendaPassiva = TextEditingController();
-  final _controllerRendimentoDasAplicacoes = TextEditingController();
-  final _controllerGrandeObjetivo = TextEditingController();
-
-  final List list = storage.getItem('history') ?? [];
+  bool showSimulation = false;
+  final _controllerDesiredIncome = TextEditingController();
+  final _controllerCurrentlyLiquidIncome = TextEditingController();
+  final _controllerCurrentlySavesPercentual = TextEditingController();
+  final _controllerCurrentlySaves = TextEditingController();
+  final _controllerPassiveIncomeYield = TextEditingController();
+  final _controllerApplicationYield = TextEditingController();
+  final _controllerBigGoal = TextEditingController();
 
   _submitSimulation() {
-    if (_controllerRendaMensalDesejada.text.isNotEmpty &&
-        _controllerRendaMensalLiquidaAtual.text.isNotEmpty &&
-        _controllerEconomiaAtualPercentual.text.isNotEmpty &&
-        _controllerEconomiaAtual.text.isNotEmpty &&
-        _controllerRendimentoDaRendaPassiva.text.isNotEmpty &&
-        _controllerRendimentoDasAplicacoes.text.isNotEmpty &&
-        _controllerGrandeObjetivo.text.isNotEmpty) {
-      this.list.add({
-        "dataCriacao": DateTime.now().toLocal().toString(),
-        "rendaMensalDesejada": _controllerRendaMensalDesejada.text,
-        "rendaMensalLiquidaAtual": _controllerRendaMensalLiquidaAtual.text,
-        "economiaAtualPercentual": _controllerEconomiaAtualPercentual.text,
-        "economiaAtual": _controllerEconomiaAtual.text,
-        "rendimentoDaRendaPassiva": _controllerRendimentoDaRendaPassiva.text,
-        "rendimentoDasAplicacoes": _controllerRendimentoDasAplicacoes.text,
-        "grandeObjetivo": _controllerGrandeObjetivo.text,
-      });
-      storage.setItem('history', this.list);
+    if (_controllerDesiredIncome.text.isNotEmpty &&
+        _controllerCurrentlyLiquidIncome.text.isNotEmpty &&
+        _controllerCurrentlySavesPercentual.text.isNotEmpty &&
+        _controllerCurrentlySaves.text.isNotEmpty &&
+        _controllerPassiveIncomeYield.text.isNotEmpty &&
+        _controllerApplicationYield.text.isNotEmpty &&
+        _controllerBigGoal.text.isNotEmpty) {
+      List<Map<String, double>> years = calcBigGoal(
+        double.parse(_controllerBigGoal.text),
+        double.parse(_controllerPassiveIncomeYield.text),
+        double.parse(_controllerCurrentlySaves.text),
+      );
+
+      saveBigGoal(years);
       Navigator.push(
         context,
         MaterialPageRoute<void>(
-          builder: (BuildContext context) => Preview(
-            rendaMensalDesejada:
-                double.parse(_controllerRendaMensalDesejada.text),
-            rendaMensalLiquidaAtual:
-                double.parse(_controllerRendaMensalLiquidaAtual.text),
-            economiaAtualPercentual:
-                double.parse(_controllerEconomiaAtualPercentual.text),
-            economiaAtual: double.parse(_controllerEconomiaAtual.text),
-            rendimentoDaRendaPassiva:
-                double.parse(_controllerRendimentoDaRendaPassiva.text),
-            rendimentoDasAplicacoes:
-                double.parse(_controllerRendimentoDasAplicacoes.text),
-            grandeObjetivo: double.parse(_controllerGrandeObjetivo.text),
-          ),
+          builder: (BuildContext context) => Preview(years),
         ),
       );
     }
@@ -129,11 +110,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         FloatingActionButton(
+                          heroTag: 'goToHistory',
                           onPressed: () => Navigator.push(
                               context,
                               MaterialPageRoute<void>(
                                 builder: (BuildContext context) =>
-                                    History(this.list),
+                                    History(getBigGoals()),
                               )),
                           tooltip: 'Histórico',
                           child: Icon(Icons.history),
@@ -142,6 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           width: 80,
                         ),
                         FloatingActionButton(
+                          heroTag: 'newSimulation',
                           onPressed: () =>
                               setState(() => showSimulation = true),
                           tooltip: 'Nova Simulação',
@@ -162,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }
                                 return null;
                               },
-                              controller: _controllerRendaMensalDesejada,
+                              controller: _controllerDesiredIncome,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Renda Mensal Desejada',
@@ -177,7 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }
                                 return null;
                               },
-                              controller: _controllerRendaMensalLiquidaAtual,
+                              controller: _controllerCurrentlyLiquidIncome,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Renda Mensal Liquida Atual',
@@ -192,16 +175,16 @@ class _MyHomePageState extends State<MyHomePage> {
                                   }
                                   return null;
                                 },
-                                controller: _controllerEconomiaAtualPercentual,
+                                controller: _controllerCurrentlySavesPercentual,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                   labelText: 'Economia Atual (em %)',
                                 ),
                                 onChanged: (value) {
                                   if (value.isNotEmpty) {
-                                    _controllerEconomiaAtual
+                                    _controllerCurrentlySaves
                                         .text = (double.parse(
-                                                _controllerRendaMensalLiquidaAtual
+                                                _controllerCurrentlyLiquidIncome
                                                     .text) *
                                             (double.parse(value) / 100))
                                         .toStringAsFixed(2);
@@ -212,7 +195,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: TextFormField(
                               style: TextStyle(color: Colors.green),
                               enabled: false,
-                              controller: _controllerEconomiaAtual,
+                              controller: _controllerCurrentlySaves,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Economia Atual',
@@ -227,7 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                   }
                                   return null;
                                 },
-                                controller: _controllerRendimentoDaRendaPassiva,
+                                controller: _controllerPassiveIncomeYield,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
                                   labelText:
@@ -235,9 +218,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 onChanged: (value) {
                                   if (value.isNotEmpty) {
-                                    _controllerGrandeObjetivo
-                                        .text = ((double.parse(
-                                                    _controllerRendaMensalDesejada
+                                    _controllerBigGoal.text = ((double.parse(
+                                                    _controllerDesiredIncome
                                                         .text) *
                                                 12) /
                                             (double.parse(value) / 100))
@@ -253,7 +235,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                 }
                                 return null;
                               },
-                              controller: _controllerRendimentoDasAplicacoes,
+                              controller: _controllerApplicationYield,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Rendimento das Aplicações (em %)',
@@ -265,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               style: TextStyle(
                                   color: Colors.deepPurple, fontSize: 20),
                               enabled: false,
-                              controller: _controllerGrandeObjetivo,
+                              controller: _controllerBigGoal,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
                                 labelText: 'Grande Objetivo',
