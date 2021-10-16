@@ -14,7 +14,8 @@ Simple Passive Income Calculator
 
 # Future
 
-- Refactoring: remove logic from pages
+- Feat: Add AdMob banner
+- Refactoring: Break pages in components 
 
 
 
