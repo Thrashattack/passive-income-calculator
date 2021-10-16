@@ -58,70 +58,109 @@ class Preview extends StatelessWidget {
       ),
       body: Container(
           child: Column(children: [
-        Table(
-            border: TableBorder.all(width: 1.0, color: Colors.black),
-            children: [
-              TableRow(children: [
-                TableCell(
-                  child: Text("Ano"),
-                ),
-                TableCell(
-                  child: Text("Aporte Anual"),
-                ),
-                TableCell(
-                  child: Text("Rendimento Anual"),
-                ),
-                TableCell(
-                  child: Text("Valor Final"),
-                ),
-                TableCell(
-                  child: Text("Renda Passiva Anual"),
-                ),
-                TableCell(
-                  child: Text("Renda Passiva Mensal"),
-                ),
+        Padding(
+          padding: EdgeInsets.all(16),
+          child: Table(
+              border: TableBorder.all(width: 1.0, color: Colors.black),
+              children: [
+                TableRow(
+                    decoration: BoxDecoration(
+                        border: Border(
+                            right: BorderSide(
+                                width: 2.0,
+                                color: Colors.green,
+                                style: BorderStyle.solid),
+                            left: BorderSide(
+                                width: 2.0,
+                                color: Colors.green,
+                                style: BorderStyle.solid),
+                            top: BorderSide(
+                                width: 2.0,
+                                color: Colors.green,
+                                style: BorderStyle.solid),
+                            bottom: BorderSide(
+                                width: 2.0,
+                                color: Colors.green,
+                                style: BorderStyle.solid))),
+                    children: [
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Text("Ano", style: TextStyle(fontSize: 16)),
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Text("Aporte Anual",
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Text("Rendimento Anual",
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child:
+                            Text("Valor Final", style: TextStyle(fontSize: 16)),
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Text("Renda Passiva Anual",
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                      TableCell(
+                        verticalAlignment: TableCellVerticalAlignment.middle,
+                        child: Text("Renda Passiva Mensal",
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                    ]),
+                ...this.anos.map((ano) {
+                  return TableRow(children: [
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Text(
+                        "${this.anos.indexOf(ano) + 1}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Text(
+                        "R\$ ${ano['aporteAnual'].toStringAsFixed(2)}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Text(
+                        "${ano['rendimentoAnual'].toStringAsFixed(2)} %",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Text(
+                        "R\$ ${ano['valorFinal'].toStringAsFixed(2)}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Text(
+                        "R\$ ${ano['rendaPassivaAtualAno'].toStringAsFixed(2)}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    TableCell(
+                      verticalAlignment: TableCellVerticalAlignment.middle,
+                      child: Text(
+                        "R\$ ${ano['rendaPassivaAtualMes'].toStringAsFixed(2)}",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ]);
+                }).toList()
               ]),
-              ...this.anos.map((ano) {
-                return TableRow(children: [
-                  TableCell(
-                    child: Text(
-                      "${this.anos.indexOf(ano) + 1}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "${ano['aporteAnual'].toStringAsFixed(2)}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "${ano['rendimentoAnual'].toStringAsFixed(2)}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "${ano['valorFinal'].toStringAsFixed(2)}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "${ano['rendaPassivaAtualAno'].toStringAsFixed(2)}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  TableCell(
-                    child: Text(
-                      "${ano['rendaPassivaAtualMes'].toStringAsFixed(2)}",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ]);
-              }).toList()
-            ]),
+        ),
         SizedBox(
           height: 36,
         ),
@@ -132,6 +171,19 @@ class Preview extends StatelessWidget {
           },
         )
       ])),
+      bottomSheet: Container(
+        color: Colors.blue,
+        height: 100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Ad Here',
+              style: TextStyle(fontSize: 20),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

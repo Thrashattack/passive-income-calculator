@@ -1,6 +1,9 @@
 import 'package:calculadora_renda_passiva/history.dart';
 import 'package:calculadora_renda_passiva/preview.dart';
 import 'package:flutter/material.dart';
+import 'package:localstorage/localstorage.dart';
+
+final LocalStorage storage = new LocalStorage('calculadora_renda_passiva');
 
 void main() {
   runApp(CalculadoraRendaPassiva());
@@ -38,6 +41,8 @@ class _MyHomePageState extends State<MyHomePage> {
   final _controllerRendimentoDasAplicacoes = TextEditingController();
   final _controllerGrandeObjetivo = TextEditingController();
 
+  final List list = storage.getItem('history') ?? [];
+
   _submitSimulation() {
     if (_controllerRendaMensalDesejada.text.isNotEmpty &&
         _controllerRendaMensalLiquidaAtual.text.isNotEmpty &&
@@ -46,9 +51,17 @@ class _MyHomePageState extends State<MyHomePage> {
         _controllerRendimentoDaRendaPassiva.text.isNotEmpty &&
         _controllerRendimentoDasAplicacoes.text.isNotEmpty &&
         _controllerGrandeObjetivo.text.isNotEmpty) {
-      setState(() {
-        showSimulation = false;
+      this.list.add({
+        "dataCriacao": DateTime.now().toLocal().toString(),
+        "rendaMensalDesejada": _controllerRendaMensalDesejada.text,
+        "rendaMensalLiquidaAtual": _controllerRendaMensalLiquidaAtual.text,
+        "economiaAtualPercentual": _controllerEconomiaAtualPercentual.text,
+        "economiaAtual": _controllerEconomiaAtual.text,
+        "rendimentoDaRendaPassiva": _controllerRendimentoDaRendaPassiva.text,
+        "rendimentoDasAplicacoes": _controllerRendimentoDasAplicacoes.text,
+        "grandeObjetivo": _controllerGrandeObjetivo.text,
       });
+      storage.setItem('history', this.list);
       Navigator.push(
         context,
         MaterialPageRoute<void>(
@@ -75,27 +88,66 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: <Color>[
+                Colors.blue[900]!,
+                Colors.blue[800]!,
+                Colors.blue[400]!,
+              ],
+            ),
+          ),
+        ),
         title: Text(widget.title),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            bottom: Radius.circular(30),
+          ),
+        ),
       ),
       body: Center(
         child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: !showSimulation
                 ? <Widget>[
-                    Text(
-                      'Toque no Botão + para simular.',
+                    Padding(
+                      padding: EdgeInsets.all(80),
+                      child: Text(
+                        'Bem vindo ao simulador de renda fixa. Insira alguns dados sobre seu rendimento e veja em quanto tempo é possível atingir seu objetivo de renda fixa mensal.\n Clique no + para simular.',
+                        style: TextStyle(fontSize: 16),
+                        softWrap: true,
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                     SizedBox(
-                      height: 36,
+                      height: 80,
                     ),
-                    FloatingActionButton(
-                      onPressed: () => Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (BuildContext context) => History(),
-                          )),
-                      tooltip: 'Histórico',
-                      child: Icon(Icons.history),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        FloatingActionButton(
+                          onPressed: () => Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) =>
+                                    History(this.list),
+                              )),
+                          tooltip: 'Histórico',
+                          child: Icon(Icons.history),
+                        ),
+                        SizedBox(
+                          width: 80,
+                        ),
+                        FloatingActionButton(
+                          onPressed: () =>
+                              setState(() => showSimulation = true),
+                          tooltip: 'Nova Simulação',
+                          child: Icon(Icons.add),
+                        )
+                      ],
                     )
                   ]
                 : <Widget>[
@@ -178,7 +230,8 @@ class _MyHomePageState extends State<MyHomePage> {
                                 controller: _controllerRendimentoDaRendaPassiva,
                                 keyboardType: TextInputType.number,
                                 decoration: InputDecoration(
-                                  labelText: 'Rendimento da Renda Passiva',
+                                  labelText:
+                                      'Rendimento da Renda Passiva (em %)',
                                 ),
                                 onChanged: (value) {
                                   if (value.isNotEmpty) {
@@ -203,7 +256,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               controller: _controllerRendimentoDasAplicacoes,
                               keyboardType: TextInputType.number,
                               decoration: InputDecoration(
-                                labelText: 'Rendimento das Aplicações',
+                                labelText: 'Rendimento das Aplicações (em %)',
                               ),
                             )),
                         Padding(
@@ -254,10 +307,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                   ]),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => setState(() => showSimulation = true),
-        tooltip: 'Nova Simulação',
-        child: Icon(Icons.add),
+      bottomSheet: Container(
+        color: Colors.blue,
+        height: 100,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Ad Here',
+              style: TextStyle(fontSize: 20),
+            )
+          ],
+        ),
       ),
     );
   }

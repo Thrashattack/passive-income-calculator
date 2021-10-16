@@ -13,6 +13,10 @@ Calculadora de Renda Passiva.
 
 - Run `flutter run`
 
+# Future
+
+- Refactoring: remove logic from pages
+
 
 
 
