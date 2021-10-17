@@ -1,9 +1,10 @@
 import 'package:passive_income_calculator/components/container.dart';
+import 'package:passive_income_calculator/logic/types/history.dart';
 import 'package:passive_income_calculator/pages/preview.dart';
 import 'package:flutter/material.dart';
 
 class History extends StatelessWidget {
-  final List history;
+  final List<HistoryType> history;
 
   History(this.history);
 
@@ -15,36 +16,48 @@ class History extends StatelessWidget {
       ),
       body: defaultContainer(
           child: this.history.length == 0
-              ? [CircularProgressIndicator()]
-              : [
-                  ListView.builder(
-                    itemCount: this.history.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Padding(
-                          padding: EdgeInsets.all(16),
-                          child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(this.history[index]['dateCreated']!,
-                                    style: TextStyle(fontSize: 20)),
-                                FloatingActionButton(
-                                  heroTag:
-                                      '${this.history[index]['dateCreated']}',
-                                  onPressed: () => Navigator.push(
-                                    context,
-                                    MaterialPageRoute<void>(
-                                      builder: (BuildContext context) =>
-                                          Preview(this.history[index]['years']
-                                              as List<Map<String, double>>),
-                                    ),
-                                  ),
-                                  child: Icon(Icons.remove_red_eye),
-                                  tooltip: 'Ver Simulação',
-                                ),
-                              ]));
-                    },
+              ? [
+                  SizedBox(height: 100),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Column(
+                        children: [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 24),
+                          Row(
+                            children: [
+                              Text("Nenhum registro ainda...",
+                                  style: TextStyle(fontSize: 20)),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
                   )
-                ]),
+                ]
+              : this.history.map((item) {
+                  return Padding(
+                      padding: EdgeInsets.all(16),
+                      child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(item.dateCreated,
+                                style: TextStyle(fontSize: 20)),
+                            FloatingActionButton(
+                              heroTag: '${item.dateCreated}',
+                              onPressed: () => Navigator.push(
+                                context,
+                                MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      Preview(item.years),
+                                ),
+                              ),
+                              child: Icon(Icons.remove_red_eye),
+                              tooltip: 'Ver Simulação',
+                            ),
+                          ]));
+                }).toList()),
       floatingActionButton: FloatingActionButton(
         heroTag: 'backToHome',
         backgroundColor: Colors.green,
@@ -53,18 +66,15 @@ class History extends StatelessWidget {
         child: Icon(Icons.home),
       ),
       bottomSheet: Container(
-        color: Colors.blue,
-        height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Ad Here',
-              style: TextStyle(fontSize: 20),
-            )
-          ],
-        ),
-      ),
+          height: 80,
+          color: Colors.blue,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Ad Here",
+                  style: TextStyle(color: Colors.white, fontSize: 20)),
+            ],
+          )),
     );
   }
 }

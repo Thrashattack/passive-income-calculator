@@ -127,18 +127,15 @@ class Preview extends StatelessWidget {
         )
       ]),
       bottomSheet: Container(
-        color: Colors.blue,
-        height: 100,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Ad Here',
-              style: TextStyle(fontSize: 20),
-            )
-          ],
-        ),
-      ),
+          height: 80,
+          color: Colors.blue,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("Ad Here",
+                  style: TextStyle(color: Colors.white, fontSize: 20)),
+            ],
+          )),
     );
   }
 }

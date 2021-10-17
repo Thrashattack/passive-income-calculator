@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 
 Widget defaultContainer({required List<Widget> child}) {
-  return Scrollable(
-    viewportBuilder: (BuildContext context, ViewportOffset position) {
-      return Viewport(
-        anchor: 0.0,
-        cacheExtent: 0.1,
-        cacheExtentStyle: CacheExtentStyle.viewport,
-        offset: position,
-        slivers: [SliverList(delegate: SliverChildListDelegate(child))],
-      );
-    },
-  );
+  return LayoutBuilder(
+      builder: (BuildContext context, BoxConstraints viewportConstraints) {
+    return SingleChildScrollView(
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          minHeight: viewportConstraints.maxHeight,
+        ),
+        child: IntrinsicHeight(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: child,
+          ),
+        ),
+      ),
+    );
+  });
 }

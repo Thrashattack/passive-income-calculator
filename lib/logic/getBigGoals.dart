@@ -1,7 +1,9 @@
 import 'package:localstorage/localstorage.dart';
+import 'package:passive_income_calculator/logic/types/history.dart';
 
-List getBigGoals() {
+List<HistoryType> getBigGoals() {
   final LocalStorage storage = new LocalStorage('calculadora_renda_passiva');
-  List history = storage.getItem('history') ?? [];
+  final List<HistoryType> history =
+      storage.getItem('history') ?? List<HistoryType>.empty();
   return history;
 }
