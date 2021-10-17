@@ -14,6 +14,7 @@ Simple Passive Income Calculator
 
 # Future
 
+- Fix: Add e2e tests
 - Feat: Add AdMob banner
 - Refactoring: Break pages in components 
 

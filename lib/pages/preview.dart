@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passive_income_calculator/components/container.dart';
 
 class Preview extends StatelessWidget {
   final List<Map<String, double>> yearsList;
@@ -11,8 +12,7 @@ class Preview extends StatelessWidget {
       appBar: AppBar(
         title: Text("Previsão"),
       ),
-      body: Container(
-          child: Column(children: [
+      body: defaultContainer(child: [
         Padding(
           padding: EdgeInsets.all(16),
           child: Table(
@@ -125,7 +125,7 @@ class Preview extends StatelessWidget {
             Navigator.pop(context);
           },
         )
-      ])),
+      ]),
       bottomSheet: Container(
         color: Colors.blue,
         height: 100,
