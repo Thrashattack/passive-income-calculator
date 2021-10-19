@@ -13,6 +13,7 @@ dependencies:
 
   cupertino_icons: ^1.0.2
   localstorage: ^4.0.0+1
+  google_mobile_ads: ^0.13.5
 
 dev_dependencies:
   flutter_test:

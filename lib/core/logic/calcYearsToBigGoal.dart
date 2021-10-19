@@ -1,6 +1,6 @@
-List<Map<String, double>> calcBigGoal(
+List<Map<String, double>> calcYearsToBigGoal(
     double bigGoal, double passiveIncomeYield, double currentlyMonthSaves) {
-  List<Map<String, double>> years = [];
+  List<Map<String, double>> yearsToBigGoal = [];
   double anualContrib = 0.0;
   double finalSavesAmount = 0.0;
 
@@ -12,7 +12,7 @@ List<Map<String, double>> calcBigGoal(
         finalSavesAmount * (passiveIncomeYield / 100);
     double currentlyPassiveIncomeMonth = currentlyPassiveIncomeYear / 12;
 
-    years.add({
+    yearsToBigGoal.add({
       "anualContrib": anualContrib,
       "anualYield": passiveIncomeYield,
       "finalSavesAmount": finalSavesAmount,
@@ -21,5 +21,5 @@ List<Map<String, double>> calcBigGoal(
     });
   }
 
-  return years;
+  return yearsToBigGoal;
 }

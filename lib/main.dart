@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:passive_income_calculator/pages/home.dart';
 
-void main() {
+import 'package:passive_income_calculator/pages/home.dart';
+import 'package:passive_income_calculator/providers/AdManager.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  AdManager.initialize();
   runApp(PassiveIncomeCalculator());
 }
 
