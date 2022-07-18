@@ -30,9 +30,9 @@ class _HomeState extends State<Home> {
         _controllerApplicationYield.text.isNotEmpty &&
         _controllerBigGoal.text.isNotEmpty) {
       List<Map<String, double>> yearsToBigGoal = calcYearsToBigGoal(
-        double.parse(_controllerBigGoal.text),
-        double.parse(_controllerPassiveIncomeYield.text),
-        double.parse(_controllerCurrentlySaves.text),
+        double.parse(_controllerBigGoal.text.replaceAll(',', '.')),
+        double.parse(_controllerPassiveIncomeYield.text.replaceAll(',', '.')),
+        double.parse(_controllerCurrentlySaves.text.replaceAll(',', '.')),
       );
 
       saveBigGoal(yearsToBigGoal);
@@ -60,202 +60,203 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    return !showSimulation
-        ? DefaultContainer(title: "Calculadora de Renda Fixa", child: [
-            Padding(
-              padding: EdgeInsets.all(80),
-              child: Text(
-                'Bem vindo ao simulador de renda fixa. Insira alguns dados sobre seu rendimento e veja em quanto tempo é possível atingir seu objetivo de renda fixa mensal.\n Clique no + para simular.',
-                style: TextStyle(fontSize: 16),
-                softWrap: true,
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(
-              height: 80,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                FloatingActionButton(
-                  heroTag: 'goToHistory',
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (BuildContext context) => HistoryPage(
-                            history: getBigGoals(), context: context),
-                      )),
-                  tooltip: 'Histórico',
-                  child: Icon(Icons.history),
+    Widget welcome =
+        DefaultContainer(title: "Calculadora de Renda Fixa", child: [
+      Padding(
+        padding: EdgeInsets.all(80),
+        child: Text(
+          'Bem vindo ao simulador de renda fixa. Insira alguns dados sobre seu rendimento e veja em quanto tempo é possível atingir seu objetivo de renda fixa mensal.\n Clique no + para simular.',
+          style: TextStyle(fontSize: 16),
+          softWrap: true,
+          textAlign: TextAlign.center,
+        ),
+      ),
+      SizedBox(
+        height: 80,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          FloatingActionButton(
+            heroTag: 'goToHistory',
+            onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) =>
+                      HistoryPage(history: getBigGoals(), context: context),
+                )),
+            tooltip: 'Histórico',
+            child: Icon(Icons.history),
+          ),
+          SizedBox(
+            width: 80,
+          ),
+          FloatingActionButton(
+            heroTag: 'newSimulation',
+            onPressed: () => setState(() => showSimulation = true),
+            tooltip: 'Nova Simulação',
+            child: Icon(Icons.add),
+          )
+        ],
+      )
+    ]);
+    Widget simulation =
+        DefaultContainer(title: "Simulador de Renda Fixa", child: [
+      Column(
+        children: [
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value != null && value.isEmpty) {
+                    return 'Insira a Renda Mensal Desejada';
+                  }
+                  return null;
+                },
+                controller: _controllerDesiredIncome,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Renda Mensal Desejada',
                 ),
-                SizedBox(
-                  width: 80,
+              )),
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value != null && value.isEmpty) {
+                    return 'Insira a Renda Mensal Liquida Atual';
+                  }
+                  return null;
+                },
+                controller: _controllerCurrentlyLiquidIncome,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Renda Mensal Liquida Atual',
                 ),
-                FloatingActionButton(
-                  heroTag: 'newSimulation',
-                  onPressed: () => setState(() => showSimulation = true),
-                  tooltip: 'Nova Simulação',
-                  child: Icon(Icons.add),
-                )
-              ],
-            )
-          ])
-        : DefaultContainer(title: "Simulador de Renda Fixa", child: [
-            Column(
-              children: [
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return 'Insira a Renda Mensal Desejada';
-                        }
-                        return null;
-                      },
-                      controller: _controllerDesiredIncome,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Renda Mensal Desejada',
-                      ),
-                    )),
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return 'Insira a Renda Mensal Liquida Atual';
-                        }
-                        return null;
-                      },
-                      controller: _controllerCurrentlyLiquidIncome,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Renda Mensal Liquida Atual',
-                      ),
-                    )),
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                        validator: (value) {
-                          if (value != null && value.isEmpty) {
-                            return 'Insira a Economia Atual (em %)';
-                          }
-                          return null;
-                        },
-                        controller: _controllerCurrentlySavesPercentual,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Economia Atual (em %)',
-                        ),
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            _controllerCurrentlySaves.text = (double.parse(
-                                        _controllerCurrentlyLiquidIncome.text) *
-                                    (double.parse(value) / 100))
-                                .toStringAsFixed(2);
-                          }
-                        })),
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      style: TextStyle(color: Colors.green),
-                      enabled: false,
-                      controller: _controllerCurrentlySaves,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Economia Atual',
-                      ),
-                    )),
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                        validator: (value) {
-                          if (value != null && value.isEmpty) {
-                            return 'Insira o Rendimento da Renda Passiva';
-                          }
-                          return null;
-                        },
-                        controller: _controllerPassiveIncomeYield,
-                        keyboardType: TextInputType.number,
-                        decoration: InputDecoration(
-                          labelText: 'Rendimento da Renda Passiva (em %)',
-                        ),
-                        onChanged: (value) {
-                          if (value.isNotEmpty) {
-                            _controllerBigGoal.text =
-                                ((double.parse(_controllerDesiredIncome.text) *
-                                            12) /
-                                        (double.parse(value) / 100))
-                                    .toStringAsFixed(2);
-                          }
-                        })),
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      validator: (value) {
-                        if (value != null && value.isEmpty) {
-                          return 'Insira o Rendimento das Aplicações';
-                        }
-                        return null;
-                      },
-                      controller: _controllerApplicationYield,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Rendimento das Aplicações (em %)',
-                      ),
-                    )),
-                Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      style: TextStyle(color: Colors.deepPurple, fontSize: 20),
-                      enabled: false,
-                      controller: _controllerBigGoal,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        labelText: 'Grande Objetivo',
-                      ),
-                    )),
-              ],
-            ),
-            SizedBox(
-              height: 24,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.redAccent)),
-                  onPressed: () {
-                    setState(() {
-                      showSimulation = false;
-                    });
+              )),
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return 'Insira a Economia Atual (em %)';
+                    }
+                    return null;
                   },
-                  child: Text('Voltar'),
+                  controller: _controllerCurrentlySavesPercentual,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Economia Atual (em %)',
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      _controllerCurrentlySaves.text =
+                          (double.parse(_controllerCurrentlyLiquidIncome.text) *
+                                  (double.parse(value) / 100))
+                              .toStringAsFixed(2);
+                    }
+                  })),
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                style: TextStyle(color: Colors.green),
+                enabled: false,
+                controller: _controllerCurrentlySaves,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Economia Atual',
                 ),
-                SizedBox(
-                  width: 36,
+              )),
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                  validator: (value) {
+                    if (value != null && value.isEmpty) {
+                      return 'Insira o Rendimento da Renda Passiva';
+                    }
+                    return null;
+                  },
+                  controller: _controllerPassiveIncomeYield,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Rendimento da Renda Passiva (em %)',
+                  ),
+                  onChanged: (value) {
+                    if (value.isNotEmpty) {
+                      _controllerBigGoal.text =
+                          ((double.parse(_controllerDesiredIncome.text) * 12) /
+                                  (double.parse(value) / 100))
+                              .toStringAsFixed(2);
+                    }
+                  })),
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                validator: (value) {
+                  if (value != null && value.isEmpty) {
+                    return 'Insira o Rendimento das Aplicações';
+                  }
+                  return null;
+                },
+                controller: _controllerApplicationYield,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Rendimento das Aplicações (em %)',
                 ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.green)),
-                  child: Text("Simular"),
-                  onPressed: _submitSimulation,
+              )),
+          Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextFormField(
+                style: TextStyle(color: Colors.deepPurple, fontSize: 20),
+                enabled: false,
+                controller: _controllerBigGoal,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  labelText: 'Grande Objetivo',
                 ),
-                SizedBox(
-                  width: 36,
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all<Color>(Colors.blue)),
-                  child: Text("Limpar"),
-                  onPressed: () => _clearForm(),
-                )
-              ],
-            )
-          ]);
+              )),
+        ],
+      ),
+      SizedBox(
+        height: 24,
+      ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.redAccent)),
+            onPressed: () {
+              setState(() {
+                showSimulation = false;
+              });
+            },
+            child: Text('Voltar'),
+          ),
+          SizedBox(
+            width: 36,
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor:
+                    MaterialStateProperty.all<Color>(Colors.green)),
+            child: Text("Simular"),
+            onPressed: _submitSimulation,
+          ),
+          SizedBox(
+            width: 36,
+          ),
+          ElevatedButton(
+            style: ButtonStyle(
+                backgroundColor: MaterialStateProperty.all<Color>(Colors.blue)),
+            child: Text("Limpar"),
+            onPressed: () => _clearForm(),
+          )
+        ],
+      )
+    ]);
+
+    return !showSimulation ? welcome : simulation;
   }
 }
