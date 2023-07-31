@@ -1,4 +1,4 @@
-# passive_income_calculator
+# passive-income-calculator
 Simple Passive Income Calculator
 
 ## Setup
